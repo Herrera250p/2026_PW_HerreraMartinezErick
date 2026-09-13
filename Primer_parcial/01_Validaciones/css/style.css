@@ -89,3 +89,6 @@ footer{
     background-color: #e7e8e9;
 }
 
+.formulario-registro button:hover{
+    background-color: #FFFBDE;
+}
