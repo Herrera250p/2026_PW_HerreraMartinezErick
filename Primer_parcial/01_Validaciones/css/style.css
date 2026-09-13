@@ -12,7 +12,7 @@ body {
 header{
 
     color: #0a0a0a;
-    background-color: #91C8E4;
+    background-color: #4682A9;
     padding: 1.6rem;
     text-align: center;
 }
@@ -48,7 +48,7 @@ footer{
     padding: 1rem;
     border: 1px solid #4d545a;
     border-radius: 0.5rem;
-    background-color: #749BC2;
+    background-color: #91C8E4;
 ;
 
 }
@@ -68,6 +68,24 @@ footer{
     padding: 1rem;
     border: 1px solid #1b1e20;
     border-radius: 0.5rem;
-    background-color: #749BC2;
+    background-color: #91C8E4;
 
 }
+
+.formulario-registro button-active{
+    border-radius: 0.5rem;
+    border: 1px solid #1b1e20;
+    padding: 1rem;
+}
+
+.button:active{
+    filter: brightness(0.85);
+}
+
+.formulario-registro input{
+    padding: 0.5rem;
+    border: 1px solid #1b1e20;
+    border-radius: 0.5rem;
+    background-color: #e7e8e9;
+}
+
