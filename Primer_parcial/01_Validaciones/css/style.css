@@ -48,7 +48,8 @@ footer{
     padding: 1rem;
     border: 1px solid #4d545a;
     border-radius: 0.5rem;
-    background-color: #ffff;
+    background-color: #ad7b7b;
+;
 
 }
 
@@ -65,8 +66,8 @@ footer{
 
 .formulario-registro{
     padding: 1rem;
-    border: 1px solid #4d545a;
+    border: 1px solid #1b1e20;
     border-radius: 0.5rem;
-    background-color: #ffff;
+    background-color: #ad7b7b;
 
 }
