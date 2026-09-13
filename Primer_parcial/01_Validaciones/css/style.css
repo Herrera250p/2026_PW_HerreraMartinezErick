@@ -63,4 +63,10 @@ footer{
 
 }
 
+.formulario-registro{
+    padding: 1rem;
+    border: 1px solid #4d545a;
+    border-radius: 0.5rem;
+    background-color: #ffff;
 
+}
