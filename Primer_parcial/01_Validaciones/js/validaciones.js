@@ -24,7 +24,7 @@ const mensajes = {
 
 function validarCampo(campo, valor){
 
-    return patrones[campo].test()(valor.trim());
+    return patrones[campo].test(valor.trim());
 
 };
 
@@ -42,11 +42,11 @@ if (typeof document !== 'undefined'){
 
         for (const campo of Object.keys(patrones)){
             const input = document.getElementById(campo);
-            const spanError =document.getElementById('error-${campo}');
+            const spanError =document.getElementById(`error-${campo}`);
             const esValido = validarCampo(campo, input.value);
 
             input.classList.toggle('invalido', !esValido);
-            spanError.textContent = esValido ? '' :mensaje[campo];
+            spanError.textContent = esValido ? '' : mensajes[campo];
             if(!esValido) formularioValido = false;
 
 

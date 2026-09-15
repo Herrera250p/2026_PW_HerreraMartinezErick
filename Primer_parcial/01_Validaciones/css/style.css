@@ -92,3 +92,26 @@ footer{
 .formulario-registro button:hover{
     background-color: #FFFBDE;
 }
+.formulario-registro input.invalido {
+    border: 2px solid #d9534f;
+    
+}
+
+.mensaje-error {
+    color: #ff0101;
+    background-color: #e25f5f;
+    border: 1px solid #f5c6cb;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.mensaje-exito{
+    color: #23ff06;
+    background-color: #8deb8d;
+    border: 1px solid #a3e6a3;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+
+}
