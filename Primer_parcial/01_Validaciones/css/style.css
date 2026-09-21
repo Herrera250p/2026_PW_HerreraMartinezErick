@@ -98,20 +98,33 @@ footer{
 }
 
 .mensaje-error {
-    color: #ff0101;
+    color: #000000;
     background-color: #e25f5f;
     border: 1px solid #f5c6cb;
     padding: 0.5rem;
     border-radius: 0.5rem;
     margin-top: 1rem;
+    display: none;
+    text-align: center;
+    font-weight: bold;
 }
 
 .mensaje-exito{
-    color: #23ff06;
+    color: #0b140a;
     background-color: #8deb8d;
     border: 1px solid #a3e6a3;
     padding: 0.5rem;
     border-radius: 0.5rem;
     margin-top: 1rem;
+    display: none;
+    text-align: center;
+    font-weight: bold;
 
+}
+
+.error {
+    color: #d9534f;
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 0.5rem;
 }

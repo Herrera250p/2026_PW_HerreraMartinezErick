@@ -10,7 +10,7 @@ itegrados por el usuario, en este caso, en un formulario
 */
 
 const patrones = {
-    nombre: /^ [A-Za-zÁÉÍÓáéíóúñüÜ\s{2,60}]$/,
+    nombre: /^[A-Za-zÁÉÍÓáéíóúñüÜ\s]{2,60}$/,
     boleta :/^\d{10}$/,
     fecha :/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/ 
 };
@@ -26,13 +26,14 @@ function validarCampo(campo, valor){
 
     return patrones[campo].test(valor.trim());
 
-};
+}
 
 //necesitamos ver el resto del aechivo DOM,
 
 if (typeof document !== 'undefined'){
 
     const formulario = document.getElementById('form-registro');
+    
 
     formulario.addEventListener('submit', (evento) => {
         evento.preventDefault();//para evitar que se envie auto
@@ -51,5 +52,18 @@ if (typeof document !== 'undefined'){
 
 
         }
-    })
+        const mensajeGeneral = document.getElementById('mensaje-exito');
+        if (formularioValido){
+            mensajeGeneral.className = 'mensaje-exito';
+            mensajeGeneral.textContent = 'Registro exitoso';
+            mensajeGeneral.style.display = 'block';
+            formulario.reset();
+
+        }else{
+            mensajeGeneral.className ='mensaje-error';
+            mensajeGeneral.textContent ='Corrige los campos'
+            mensajeGeneral.style.display = 'block';
+        }
+
+    });
 }
