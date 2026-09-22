@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ejecicios con Node</title>
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
     <header>
@@ -32,17 +32,21 @@
 
             <form id="form-arreglos" class="formulario" >
                 <div class="campos" >
+                    <p>Elige el metodo a usar</p>
                     <label for="operacion-arreglo" name="operacion-arreglo">Operación</label>
                     <select name="operacion-arreglo" id="operacion-arreglo">
                         <option value="forEach">ForEach - Lista Simple</option>
                         <option value="map">map - Copia solo Nombres</option>
                         <option value="filter">filter - Filtrar Talleres con cupo lleno</option>
                         <option value="find">find - Buscar por el nombre del instructor</option>
+                        <option value="reduce">reduce - calcula total Inscritos</option>
+                        <option value="filter + map">filter + map encadenados — para saber si tiene cupos disponibles el taller</option>
                     </select>
                 </div>
 
                 <button type="submit" >Ejecutar</button>
-
+                <p>Al dar click en el boton ejecutar la pagina usara el metodo de arreglo seleccionado en la "Operacion"</p>
+                <h3>Resultados:</h3>
             </form>
 
             <output class="resultado" id="resultado-arreglo" for="form-arreglo" ></output>

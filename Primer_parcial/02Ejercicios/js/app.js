@@ -8,9 +8,26 @@ const talleres = [
 ];
 
 
+
+const tbody = document.querySelector('#tabla-talleres tbody');
 function pintarTabla(){
     //debe de obtener la tabla y rellenarla con los datos de talleres
-}
+
+    const filasHTML = talleres.map((t) =>{
+        return `
+            <tr>
+                <td>${t.nombre}</td>
+                <td>${t.instructor}</td>
+                <td>${t.cupo}</td>
+                <td>${t.inscritos}</td>
+            </tr>
+            `;
+    }).join('');
+    tbody.innerHTML = filasHTML;
+
+} 
+
+pintarTabla();
 
 const formArreglos = document.getElementById('form-arreglos');
 const resultadoArreglos = document.getElementById('resultado-arreglo');
@@ -26,6 +43,32 @@ formArreglos.addEventListener('submit', (evento) =>{
         case 'forEach':
             resultado = talleres.map((t) => `- ${t.nombre} (${t.inscritos}/${t.cupo})`).join('\n');
             break;
+        case 'map' :
+            const nombres =talleres.map((t) => t.nombre);
+            resultado = nombres.map((nombre) => `- ${nombre}`).join('\n');
+            break;
+        case 'filter': 
+            const llenos = talleres.filter((t) => t.inscritos >= t.cupo);
+            resultado = llenos.map((t) => `- ${t.nombre}`).join('\n');
+            break;
+        case 'find' :
+            const primerTallerMaria =talleres.find((t) => t.instructor === "Ing. María López");
+            resultado = primerTallerMaria ? `- ${primerTallerMaria.nombre} (${primerTallerMaria.inscritos}/${primerTallerMaria.cupo})`:'No se necontro el taller';
+            break;
+        case 'reduce':    
+            const totalinscritos = talleres.reduce((acum, t) => acum + t.inscritos, 0);
+            resultado = `Total inscritos: ${totalinscritos}`;
+            break;
+        case 'filter + map':
+            const talleresdisponibles = talleres
+                .filter((t) => t.inscritos < t.cupo)
+                .map((t) => t.nombre);
+            resultado = talleresdisponibles.map((nombre) => `-${nombre}`).join('\n');
+            break;
+
+        default:
+            resultado = '';
+
     }
 
 
