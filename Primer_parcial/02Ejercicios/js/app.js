@@ -76,7 +76,10 @@ formArreglos.addEventListener('submit', (evento) =>{
 });
 
 
-//ejerciio de objetos
+//ejerciio de objetos y video 
+
+const contenedor = document.getElementById('contenedorVideo');
+const video = document.getElementById('miVideo');
 
 const formObjeto = document.getElementById('form-objeto');
 const resultadoObjeto = document.getElementById('resultado-objeto');
@@ -84,6 +87,10 @@ const resultadoObjeto = document.getElementById('resultado-objeto');
 
 formObjeto.addEventListener('submit', (evento) => {
     evento.preventDefault();
+
+    contenedor.classList.remove('oculto');
+    video.currentTime = 0; 
+    video.play();
 
     //necesitamos construit el objeto taller
     const taller = {
