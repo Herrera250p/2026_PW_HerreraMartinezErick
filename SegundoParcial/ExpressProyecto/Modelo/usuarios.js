@@ -1,4 +1,3 @@
-const { act } = require('react');
 const pool = require('../db-local');
 
 const COLUMNAS_PUBLICAS = 'id, nombre, correo, boleta, rol';
@@ -13,8 +12,8 @@ async function listar() {
 
 //consultar por id
 
-async function obtenerPorID() {
-    const [filas] =await pool.query(`SELECT ${COLUMNAS_PUBLICAS} FROM usuarios ORDER BY id = ?, [id]`);
+async function obtenerPorID(id) {
+    const [filas] =await pool.query(`SELECT ${COLUMNAS_PUBLICAS} FROM usuarios WHERE id = ?`, [id]);
 
     return filas[0];
 }
