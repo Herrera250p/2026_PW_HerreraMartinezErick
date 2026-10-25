@@ -4,12 +4,15 @@
 
 //aqui va funvion correo
  //boleta
-function validarBoleta(contraseña){
-
+function validarBoleta(boleta){
+    if(typeof boleta !== 'string') return false;
+    return /^\d{10}$/.test(boleta);
 }
 
-function validarCorreo(contraseña){
-
+function validarCorreo(correo){
+    if(typeof correo !== 'string') return false;
+    if(correo.length > 150) return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
 }
 
 function validarContraseña(contraseña){
