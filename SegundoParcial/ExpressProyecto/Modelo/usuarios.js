@@ -12,7 +12,7 @@ async function listar() {
 
 //consultar por id
 
-async function obtenerPorID(id) {
+async function obtenerPorId(id) {
     const [filas] =await pool.query(`SELECT ${COLUMNAS_PUBLICAS} FROM usuarios WHERE id = ?`, [id]);
 
     return filas[0];
@@ -23,26 +23,26 @@ async function obtenerPorID(id) {
 async function crear({nombre, correo, contraseñaHash, boleta, rol}) {
     const [info] = await pool.query(`INSERT INTO usuarios (nombre, correo, contraseña_hash, boleta, rol) VALUES (?, ?, ?, ?, ?)`,
     [nombre, correo, contraseñaHash, boleta, rol || 'alumno']);
-    return obtenerPorID(info.insertId);
+    return obtenerPorId(info.insertId);
 }
 
 async function actualizar(id, {nombre, correo, rol}) {
     const cambios = Object.entries({nombre, correo, rol}).filter(([, valor]) => valor !== undefined);
-    if(cambios.length === 0) return obtenerPorID(id);
+    if(cambios.length === 0) return obtenerPorId(id);
 
-    const coumnas = cambios.map(([columna]) => `${columna} = ?`).join(', ');
+    const columnas = cambios.map(([columna]) => `${columna} = ?`).join(', ');
 
-    const [info] = await pool.query(`UPDATE usuarios SET ${columnas} WHERE id = ?`, [...cambios.map(([, valor]) => valos), id]);
+    const [info] = await pool.query(`UPDATE usuarios SET ${columnas} WHERE id = ?`, [...cambios.map(([, valor]) => valor), id]);
 
     if(info.affectedRows === 0) return undefined;
-    return obtenerPorID(id);
+    return obtenerPorId(id);
 }
 
 
 //eliminar
 
-async function eliminar() {
-    const [filas] =await pool.query(`DELETE FROM usuarios WHERE id = ?`, [id]);
+async function eliminar(id) {
+    const [info] =await pool.query(`DELETE FROM usuarios WHERE id = ?`, [id]);
 
     return info.affectedRows > 0;
 }
@@ -55,7 +55,7 @@ async function buscarPorCorreoConHash(correo){
 } 
 
 //siempre es necesario exportar las funciones para poder crear su api
-module.exports = {listar, obtenerPorID, crear, actualizar, eliminar, buscarPorCorreoConHash};
+module.exports = {listar, obtenerPorId, crear, actualizar, eliminar, buscarPorCorreoConHash};
 
 //deberan crear las otras entidade talleres y asistencia
 //pára talleres hay que crear la funciones de consultarportaller y registrarse en un taller
