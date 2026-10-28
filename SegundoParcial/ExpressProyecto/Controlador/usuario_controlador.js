@@ -57,8 +57,8 @@ async function actualizarUsuario(req, res) {
     if(!idValido(req.params.id)) return res.status(400).json({error: 'El id del usuario no es valido'});
 
 
-    if(correo !== undefined && nombre !== undefined && rol !== undefined){
-        return res.status(400).json({error: 'Debe de ingresar alguno de los siguientes datos para actualizar: nombre, correo o rol'});
+    if(correo === undefined && nombre === undefined && rol === undefined){
+        return res.status(400).json({error: 'Envía al menos uno de: nombre, correo, rol'});
     }
     if(correo !== undefined && !validarCorreo(correo)){
         return res.status(400).json({error : 'El correo no tiene un formato valido'});
