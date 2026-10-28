@@ -56,6 +56,7 @@ async function actualizarUsuario(req, res) {
 
     if(!idValido(req.params.id)) return res.status(400).json({error: 'El id del usuario no es valido'});
 
+
     if(correo !== undefined && nombre !== undefined && rol !== undefined){
         return res.status(400).json({error: 'Debe de ingresar alguno de los siguientes datos para actualizar: nombre, correo o rol'});
     }
@@ -74,6 +75,10 @@ async function actualizarUsuario(req, res) {
         if(esDuplicado(error))return res.status(409).json({error: 'Ya existe un usuario con ese correo, ingresa uno diferente'});
         res.status(500).json({error: error.message});
     }
+    function idValido(valor){
+    const numero = Number(valor);
+    return Number.isInteger(numero) && numero > 0;
+}
     
 }
 
