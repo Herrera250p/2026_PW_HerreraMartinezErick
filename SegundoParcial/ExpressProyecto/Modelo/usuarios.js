@@ -21,7 +21,7 @@ async function obtenerPorId(id) {
 //registar usuario
 
 async function crear({nombre, correo, contraseñaHash, boleta, rol}) {
-    const [info] = await pool.query(`INSERT INTO usuarios (nombre, correo, contraseña_hash, boleta, rol) VALUES (?, ?, ?, ?, ?)`,
+    const [info] = await pool.query(`INSERT INTO usuarios (nombre, correo, contrasena_hash, boleta, rol) VALUES (?, ?, ?, ?, ?)`,
     [nombre, correo, contraseñaHash, boleta, rol || 'alumno']);
     return obtenerPorId(info.insertId);
 }
