@@ -72,6 +72,13 @@ async function listarInscritos(tallerId) {
     );
     return filas;
 }
+async function estaInscrito(usuarioId, tallerId) {
+    const [filas] = await pool.query(
+        `SELECT id FROM inscripciones WHERE usuario_id = ? AND taller_id = ?`,
+        [usuarioId, tallerId]
+    );
+    return filas.length > 0;
+}
 
 
 module.exports = {
@@ -82,5 +89,5 @@ module.exports = {
     eliminar,
     inscribir,
     listarInscritos,
- 
+    estaInscrito
 };
