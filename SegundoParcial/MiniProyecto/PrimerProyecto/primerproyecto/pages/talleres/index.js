@@ -11,6 +11,8 @@ export default function Talleres() {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [cupo, setCupo] = useState('');
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [imparte, setImparte] = useState('');
     const [errorFormulario, setErrorFormulario] = useState('');
     const [exito, setExito] = useState('');
     const [creando, setCreando] = useState(false);
@@ -44,12 +46,16 @@ export default function Talleres() {
                     nombre: nombre.trim(),
                     descripcion: descripcion.trim(),
                     cupo: Number(cupo),
+                    fecha_inicio: fechaInicio,
+                    imparte: imparte.trim(),
                 }),
             });
             setTalleres((actuales) => [...actuales, nuevoTaller]);
             setNombre('');
             setDescripcion('');
             setCupo('');
+            setFechaInicio('');
+            setImparte('');
             setExito('El taller se creó correctamente.');
         } catch (err) {
             setErrorFormulario(err.message);
@@ -93,6 +99,23 @@ export default function Talleres() {
                             step="1"
                             value={cupo}
                             onChange={(evento) => setCupo(evento.target.value)}
+                            required
+                        />
+                    </label>
+                    <label>
+                        Fecha de inicio
+                        <input
+                            type="date"
+                            value={fechaInicio}
+                            onChange={(evento) => setFechaInicio(evento.target.value)}
+                            required
+                        />
+                    </label>
+                    <label>
+                        Instructor
+                        <input
+                            value={imparte}
+                            onChange={(evento) => setImparte(evento.target.value)}
                             required
                         />
                     </label>

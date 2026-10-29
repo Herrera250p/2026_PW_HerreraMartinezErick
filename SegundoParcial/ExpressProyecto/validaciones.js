@@ -20,4 +20,11 @@ function validarContraseña(contraseña){
     return contraseña.length >= 8;
 }
 
-module.exports = {validarCorreo, validarContraseña, validarBoleta};
+function validarNombre(nombre){
+    if(typeof nombre !== 'string') return false;
+    const nombreLimpio = nombre.trim();
+    if(nombreLimpio.length === 0) return false;
+    return /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(nombreLimpio);
+}
+
+module.exports = {validarCorreo, validarContraseña, validarBoleta, validarNombre};

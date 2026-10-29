@@ -1,6 +1,6 @@
 const pool = require('../db-local');
 
-const COLUMNAS_PUBLICAS = 'id, nombre, descripcion, cupo';
+const COLUMNAS_PUBLICAS = 'id, nombre, descripcion, cupo, fecha_inicio, imparte';
 
 
 async function listar() {
@@ -15,17 +15,17 @@ async function obtenerPorId(id) {
 }
 
 
-async function crear({nombre, descripcion, cupo}) {
+async function crear({nombre, descripcion, cupo, fecha_inicio, imparte}) {
     const [info] = await pool.query(
-        `INSERT INTO talleres (nombre, descripcion, cupo) VALUES (?, ?, ?)`,
-        [nombre, descripcion || null, cupo]
+        `INSERT INTO talleres (nombre, descripcion, cupo, fecha_inicio, imparte) VALUES (?, ?, ?, ?, ?)`,
+        [nombre, descripcion || null, cupo, fecha_inicio || null, imparte || null]
     );
     return obtenerPorId(info.insertId);
 }
 
 
-async function actualizar(id, {nombre, descripcion, cupo}) {
-    const cambios = Object.entries({nombre, descripcion, cupo}).filter(([, valor]) => valor !== undefined);
+async function actualizar(id, {nombre, descripcion, cupo, fecha_inicio, imparte}) {
+    const cambios = Object.entries({nombre, descripcion, cupo, fecha_inicio, imparte}).filter(([, valor]) => valor !== undefined);
     if (cambios.length === 0) return obtenerPorId(id);
 
     const columnas = cambios.map(([columna]) => `${columna} = ?`).join(', ');
@@ -64,18 +64,39 @@ async function inscribir(usuarioId, tallerId) {
 async function listarInscritos(tallerId) {
     const [filas] = await pool.query(
         `SELECT u.id, u.nombre, u.correo, u.boleta, i.fecha_registro
-         FROM inscripciones i
-         JOIN usuarios u ON u.id = i.usuario_id
-         WHERE i.taller_id = ?
-         ORDER BY u.nombre`,
+        FROM inscripciones i
+        JOIN usuarios u ON u.id = i.usuario_id
+        WHERE i.taller_id = ?
+        ORDER BY u.nombre`,
         [tallerId]
     );
     return filas;
 }
+
+async function listarPorUsuario(usuarioId) {
+    const [filas] = await pool.query(
+        `SELECT t.id, t.nombre, t.descripcion, t.cupo, t.fecha_inicio, t.imparte
+         FROM inscripciones i
+         JOIN talleres t ON t.id = i.taller_id
+         WHERE i.usuario_id = ?
+         ORDER BY t.fecha_inicio DESC, t.nombre`,
+        [usuarioId]
+    );
+    return filas;
+}
+
 async function estaInscrito(usuarioId, tallerId) {
     const [filas] = await pool.query(
         `SELECT id FROM inscripciones WHERE usuario_id = ? AND taller_id = ?`,
         [usuarioId, tallerId]
+    );
+    return filas.length > 0;
+}
+
+async function tieneInscripcion(usuarioId) {
+    const [filas] = await pool.query(
+        `SELECT id FROM inscripciones WHERE usuario_id = ? LIMIT 1`,
+        [usuarioId]
     );
     return filas.length > 0;
 }
@@ -96,6 +117,8 @@ module.exports = {
     eliminar,
     inscribir,
     listarInscritos,
+    listarPorUsuario,
     estaInscrito,
+    tieneInscripcion,
     contarInscritos
 };

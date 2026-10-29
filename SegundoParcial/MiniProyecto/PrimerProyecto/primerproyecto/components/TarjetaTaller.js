@@ -7,6 +7,8 @@ export default function TarjetaTaller({ taller }) {
             <h2>{taller.nombre}</h2>
             <p>{taller.descripcion || 'Sin descripción disponible.'}</p>
             <p><strong>Cupo:</strong> {taller.cupo} lugares</p>
+            <p><strong>Fecha de inicio:</strong> {taller.fecha_inicio || 'Sin fecha'}</p>
+            <p><strong>Instructor:</strong> {taller.imparte || 'Sin instructor'}</p>
             <Link className={estilos.enlace} href={`/talleres/${taller.id}`}>
                 Ver detalle e inscribirme →
             </Link>

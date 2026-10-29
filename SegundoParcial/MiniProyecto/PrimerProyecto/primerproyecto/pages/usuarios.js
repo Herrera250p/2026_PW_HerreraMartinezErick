@@ -11,7 +11,6 @@ export default function Usuarios() {
     const [correo, setCorreo] = useState('');
     const [contrasena, setContrasena] = useState('');
     const [boleta, setBoleta] = useState('');
-    const [rol, setRol] = useState('alumno');
     const [errorFormulario, setErrorFormulario] = useState('');
     const [exito, setExito] = useState('');
     const [creando, setCreando] = useState(false);
@@ -46,7 +45,7 @@ export default function Usuarios() {
                     correo: correo.trim(),
                     contrasena,
                     boleta: boleta.trim(),
-                    rol,
+                    rol: 'alumno',
                 }),
             });
             setUsuarios((actuales) => [...actuales, nuevoUsuario]);
@@ -54,7 +53,6 @@ export default function Usuarios() {
             setCorreo('');
             setContrasena('');
             setBoleta('');
-            setRol('alumno');
             setExito('El usuario se creó correctamente.');
         } catch (err) {
             setErrorFormulario(err.message);
@@ -106,13 +104,6 @@ export default function Usuarios() {
                             onChange={(evento) => setBoleta(evento.target.value)}
                             required
                         />
-                    </label>
-                    <label>
-                        Rol
-                        <select value={rol} onChange={(evento) => setRol(evento.target.value)}>
-                            <option value="alumno">Estudiante</option>
-                            <option value="profesor">Profesor</option>
-                        </select>
                     </label>
                     <button type="submit" disabled={creando}>
                         {creando ? 'Creando…' : 'Crear usuario'}
