@@ -42,5 +42,3 @@ CREATE TABLE IF NOT EXISTS asistencias (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (taller_id) REFERENCES talleres(id) ON DELETE CASCADE
 );
-
-

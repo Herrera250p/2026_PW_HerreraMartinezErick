@@ -4,8 +4,10 @@ export default function Menu(){
     return (
         <nav>
             <Link href="/" >Inicio</Link>
-            <Link href="/" >MiPrimerProyecto</Link>
-            <Link href="/" >Pagina2</Link>
+            <Link href="/talleres" >Talleres</Link>
+            <Link href="/asistencia" >Asistencia</Link>
+            <Link href="/usuarios" >Usuarios</Link>
+            <Link href="/perfil" >Mi perfil</Link>
         </nav>
     );
 }

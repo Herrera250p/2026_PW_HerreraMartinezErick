@@ -1,0 +1,109 @@
+.rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.tarjeta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-top: 4px solid #6b1d3a;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+}
+
+.tarjeta h2 {
+    margin: 0;
+    color: #6b1d3a;
+}
+
+.tarjeta p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.enlace,
+.volver {
+    color: #6b1d3a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.enlace {
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.buscador {
+    width: 100%;
+    max-width: 420px;
+    margin: 8px 0;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+.panel {
+    margin: 18px 0 24px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.panel > :first-child {
+    margin-top: 0;
+}
+
+.barra {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e5e7eb;
+}
+
+.relleno {
+    height: 100%;
+    background: #6b1d3a;
+}
+
+.lleno {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.exito {
+    color: #166534;
+    font-weight: 600;
+}
+
+.lista {
+    padding-left: 20px;
+}
+
+.lista li {
+    margin-bottom: 8px;
+}
+
+.lista a {
+    color: #6b1d3a;
+    font-weight: 600;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.tabla th,
+.tabla td {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+}

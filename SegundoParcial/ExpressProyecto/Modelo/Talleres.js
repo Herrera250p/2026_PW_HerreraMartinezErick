@@ -80,6 +80,13 @@ async function estaInscrito(usuarioId, tallerId) {
     return filas.length > 0;
 }
 
+async function contarInscritos(tallerId) {
+    const [filas] = await pool.query(
+        `SELECT COUNT(*) AS total FROM inscripciones WHERE taller_id = ?`,
+        [tallerId]
+    );
+    return Number(filas[0].total);
+}
 
 module.exports = {
     listar,
@@ -89,5 +96,6 @@ module.exports = {
     eliminar,
     inscribir,
     listarInscritos,
-    estaInscrito
+    estaInscrito,
+    contarInscritos
 };

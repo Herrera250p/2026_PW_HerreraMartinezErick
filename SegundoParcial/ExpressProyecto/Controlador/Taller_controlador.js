@@ -76,7 +76,7 @@ async function actualizarTaller(req, res) {
     try{
   
         if(cupo !== undefined){
-            const inscritos = await talleresModel.contarInscritos(req.params.id);
+            const inscritos = (await talleresModel.listarInscritos(req.params.id)).length;
             if(cupo < inscritos){
                 return res.status(409).json({error: `Ya hay ${inscritos} alumnos inscritos, el cupo no puede ser menor`});
             }
@@ -127,7 +127,7 @@ async function inscribirseEnTaller(req, res) {
             return res.status(409).json({error: 'El usuario ya esta inscrito en este taller'});
         }
 
-        const inscritos = await talleresModel.contarInscritos(tallerId);
+        const inscritos = (await talleresModel.listarInscritos(tallerId)).length;
         if(inscritos >= taller.cupo){
             return res.status(409).json({error: 'El taller ya no tiene cupo disponible'});
         }
