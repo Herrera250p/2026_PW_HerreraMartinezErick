@@ -91,7 +91,12 @@ function crearApp(config, pool) {
   // 403: "sé quién eres, pero no tienes permiso".
   function requiereRol(rol) {
     // Paso 3 (en clase)
-    return pendiente(3);
+    return (req, res, next)=> {
+      if(req.session.usuario.rol !== rol){
+        return res.json({error:`403. Eres${req.session.usuario.usuario},pero esta ruta es solo para ${rol}`});
+        next();
+      }
+    }
   }
 
   // ---------- Rutas ----------
@@ -101,16 +106,53 @@ function crearApp(config, pool) {
   // Guarda un contador en la sesión. Sirve para ver que la sesión existe antes de entrar
   // (y para la demostración de fijación de sesión).
   app.post('/api/visita', (req, res) => {
-    if (!req.session) return pendiente(1)(req, res);
+    if (!req.session) return res.json({error: 'No tiene una sesion asociada'});
     req.session.visitas = (req.session.visitas || 0) + 1;
     res.json({ visitas: req.session.visitas, sesion: idCorto(req.sessionID) });
   });
 
   // Paso 2 (en clase): iniciar sesión. Paso 7 (en clase): regenerar el id al entrar.
-  app.post('/api/login', pendiente(2));
+  app.post('/api/login', async(req, res, next)=>{
+    try{
+      const{usuario, contrasena} = req.body || {};
+      const datos = await usuarios.verificar(usuario, contrasena);
+      if(!datos) return res.status(401),json({error: 'Usuario o contraseña incorrercto'});
+      //debe,os creR LA SESION  
+
+      const antes = req.session.visitas !== undefined ? idCorto(req.sessionID): null;
+      const visitas = req.session.visitas || 0;
+
+      //que vamos a aguradar 
+
+      const guardar = ()=>{
+        req.session.usuario = datos;
+        req.session.visitas = visitas;
+        req.session.creada = Date.now();
+        req.session.ultinoUso = Date.now();
+        req.session.save((error)=>{
+          if (error)return next (error);
+          res.json({usuario: datos, sesionAntes: antes, aesionDespues: idCorto(res.sessionID)});
+
+        });
+      };
+      if(config.regenerarAlEntrar){
+        //vamos a generar la sesion 
+        req.session.regenerate((error)=> (error ? next(error): guardar()));
+      }else{
+        guardar();
+      }
+    }catch(error){
+      next(error);
+    }
+  });
 
   // Paso 2 (en clase): cerrar sesión.
-  app.post('/api/logout', pendiente(2));
+  app.post('/api/logout',(req, res, next)=> {
+    req.session.destroy((error)=>{
+      res.clearCookie(NOMBRE_COOKIE);
+      res.json({mensaje : 'Sesión cerrada'});
+    });
+  });
 
   app.get('/api/sesion', requiereSesion, (req, res) => {
     const desde = config.rolling ? req.session.ultimoUso : req.session.creada;
