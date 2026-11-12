@@ -203,3 +203,7 @@ function crearApp(config, pool) {
 }
 
 module.exports = { crearApp, NOMBRE_COOKIE };
+
+//primera tarea deberan de desarrollar  una infografia sobre el uso de jwt para el inicio de sesion para el dia domingo 15 de noviembre
+
+//segunda tareA DEBERAN DE DESARROLLAR LA IUMPLEWMENTACION DEL CODIGO PARA LA AUTENTICACION 
