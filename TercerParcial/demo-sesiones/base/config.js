@@ -18,6 +18,8 @@ module.exports = {
 
   // 'lax': la cookie no viaja en peticiones POST que vienen de otros sitios. 'strict' es más estricto.
   sameSite: 'lax',
+    // En localhost usamos HTTP; en producción la cookie debe viajar solo por HTTPS.
+  secure: false,
 
   // true: al iniciar sesión el servidor cambia el id de la sesión (protege contra la fijación de sesión).
   regenerarAlEntrar: true,

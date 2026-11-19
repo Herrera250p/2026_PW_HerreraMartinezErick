@@ -77,15 +77,21 @@ function crearApp(config, pool) {
   // Paso 5 (en clase): función vencida(sesion).
 
   // 401: "no sé quién eres" (no hay sesión o ya venció).
-  function requiereSesion(req, res, next) {
-    if(req.session.usuario && vencida(req.session)){
-      return req.session.destroy(()=>{
-        res.clearCookie( NOMBRE_COOKIE);
-        res.status(401).json({error: '401 tu sesion se vencio vuelve a iniciar sesion'})
-      })
+ function requiereSesion(req, res, next) {
+    if (!req.session.usuario) {
+      return res.status(401).json({ error: 'No has iniciado sesión.' });
     }
-    // Paso 1 (en clase)
-    return pendiente(1)(req, res, next);
+
+    if (vencida(req.session)) {
+      return req.session.destroy((error) => {
+        if (error) return next(error);
+        borrarCookie(res);
+        return res.status(401).json({ error: 'Tu sesión ya expiró; vuelve a iniciar sesión.' });
+      });
+    }
+
+    req.session.ultimoUso = Date.now();
+    return next();
   }
 
   // 403: "sé quién eres, pero no tienes permiso".
@@ -101,7 +107,17 @@ function crearApp(config, pool) {
 
   // ---------- Rutas ----------
 
-  app.get('/api/config', (req, res) => res.json(config));
+    app.get('/api/config', (req, res) => {
+    res.json({
+      almacen: config.almacen,
+      maxAgeMs,
+      rolling: config.rolling ?? false,
+      httpOnly,
+      sameSite,
+      secure,
+      regenerarAlEntrar: config.regenerarAlEntrar ?? true,
+    });
+  });
 
   // Guarda un contador en la sesión. Sirve para ver que la sesión existe antes de entrar
   // (y para la demostración de fijación de sesión).
@@ -112,47 +128,52 @@ function crearApp(config, pool) {
   });
 
   // Paso 2 (en clase): iniciar sesión. Paso 7 (en clase): regenerar el id al entrar.
-  app.post('/api/login', async(req, res, next)=>{
-    try{
-      const{usuario, contrasena} = req.body || {};
+    app.post('/api/login', async (req, res, next) => {
+    try {
+      const { usuario, contrasena } = req.body || {};
       const datos = await usuarios.verificar(usuario, contrasena);
-      if(!datos) return res.status(401),json({error: 'Usuario o contraseña incorrercto'});
-      //debe,os creR LA SESION  
+      if (!datos) {
+        return res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
+      }
 
-      const antes = req.session.visitas !== undefined ? idCorto(req.sessionID): null;
+      const sesionAntes = req.session.visitas !== undefined ? idCorto(req.sessionID) : null;
       const visitas = req.session.visitas || 0;
-
-      //que vamos a aguradar 
-
-      const guardar = ()=>{
+      const guardarSesion = () => {
+        const ahora = Date.now();
         req.session.usuario = datos;
         req.session.visitas = visitas;
-        req.session.creada = Date.now();
-        req.session.ultinoUso = Date.now();
-        req.session.save((error)=>{
-          if (error)return next (error);
-          res.json({usuario: datos, sesionAntes: antes, aesionDespues: idCorto(res.sessionID)});
-
+        req.session.creada = ahora;
+        req.session.ultimoUso = ahora;
+        req.session.save((error) => {
+          if (error) return next(error);
+          return res.json({
+            usuario: datos,
+            sesionAntes,
+            sesionDespues: idCorto(req.sessionID),
+          });
         });
       };
-      if(config.regenerarAlEntrar){
-        //vamos a generar la sesion 
-        req.session.regenerate((error)=> (error ? next(error): guardar()));
-      }else{
-        guardar();
+
+      if (config.regenerarAlEntrar ?? true) {
+        return req.session.regenerate((error) => {
+          if (error) return next(error);
+          return guardarSesion();
+        });
       }
-    }catch(error){
-      next(error);
+      return guardarSesion();
+    } catch (error) {
+      return next(error);
     }
   });
-
   // Paso 2 (en clase): cerrar sesión.
-  app.post('/api/logout',(req, res, next)=> {
-    req.session.destroy((error)=>{
-      res.clearCookie(NOMBRE_COOKIE);
-      res.json({mensaje : 'Sesión cerrada'});
+  app.post('/api/logout', (req, res, next) => {
+    req.session.destroy((error) => {
+      if (error) return next(error);
+      borrarCookie(res);
+      return res.json({ mensaje: 'Sesión cerrada.' });
     });
   });
+
 
   app.get('/api/sesion', requiereSesion, (req, res) => {
     const desde = config.rolling ? req.session.ultimoUso : req.session.creada;
@@ -165,11 +186,16 @@ function crearApp(config, pool) {
 
   app.get('/api/perfil', requiereSesion, (req, res) => {
     req.session.visitas = (req.session.visitas || 0) + 1;
-    res.json({ mensaje: `Hola, ${req.session.usuario.nombre}`, rol: req.session.usuario.rol, visitas: req.session.visitas });
+    res.json({ 
+    mensaje: `Hola, ${req.session.usuario.nombre}`, 
+    rol: req.session.usuario.rol, 
+    visitas: req.session.visitas 
+  });
   });
 
   app.get('/api/admin/reporte', requiereSesion, requiereRol('admin'), (req, res) => {
-    res.json({ reporte: 'Talleres: 3 · Inscritos: 57 · Cupo libre: 18' });
+    res.json({  mensaje: 'Acceso de administrador autorizado.',
+      usuario: req.session.usuario, });
   });
 
   // SOLO PARA LA CLASE: muestra lo que el servidor guarda de cada sesión.
@@ -184,9 +210,9 @@ function crearApp(config, pool) {
         visitas: s.visitas || 0,
         expira: s.cookie && s.cookie.expires,
       }));
-      res.json({ almacen: config.almacen, sesiones: lista });
+      return res.json({ almacen: config.almacen, sesiones: lista });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   });
 
@@ -194,13 +220,18 @@ function crearApp(config, pool) {
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
   // eslint-disable-next-line no-unused-vars
-  app.use((error, req, res, next) => {
+   app.use((error, req, res, next) => {
     console.error(error);
-    res.status(500).json({ error: 'Error del servidor' });
+    if (res.headersSent) return next(error);
+    const status = Number.isInteger(error.status) && error.status >= 400 && error.status < 500
+      ? error.status
+      : 500;
+    return res.status(status).json({ error: status === 500 ? 'Error del servidor.' : error.message });
   });
 
   return app;
 }
+
 
 module.exports = { crearApp, NOMBRE_COOKIE };
 
