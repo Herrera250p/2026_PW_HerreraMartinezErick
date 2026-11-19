@@ -6,6 +6,9 @@ const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session); //Store es el almacenamiento, localstoras permanece en todos los navegadores
 const { crearModeloUsuarios } = require('./modelos/usuarios.modelo');
 const { error } = require('console');
+const crypto = require('crypto');
+const jwt = reqquire('jsonwebtoken');
+const {crearModeloTokens} = require('./modelos/tokens.modelo');
 
 const NOMBRE_COOKIE = 'connect.sid'; //toda cokkie tiene que tener un identificador, no tienen una estructura definida
 
@@ -220,7 +223,7 @@ function crearApp(config, pool) {
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
   // eslint-disable-next-line no-unused-vars
-   app.use((error, req, res, next) => {
+  app.use((error, req, res, next) => {
     console.error(error);
     if (res.headersSent) return next(error);
     const status = Number.isInteger(error.status) && error.status >= 400 && error.status < 500
@@ -228,6 +231,108 @@ function crearApp(config, pool) {
       : 500;
     return res.status(status).json({ error: status === 500 ? 'Error del servidor.' : error.message });
   });
+
+
+//jwt
+
+const SECRETO_JWT = config.jwtSecreto || process.env.JWT_SECRET || 'secreto-jwt-solo-para-esta-demo';
+
+//tenemos que crear un token por usuario, mas los dstos corresopondientes mas el vencimientode dicho token de la firma
+
+function firmarToken(usuario){
+  return jwt.sing(
+    {
+      sub: String(usuario.id), 
+      usuario: usuario.usuario, 
+      nombre: usuario.nombre,
+      rol: usuario.rol
+    },SECRETO_JWT,
+    {
+      algorithm: 'HS256', expiraIn:  config.jwtExpiraSeg, 
+      jwtid: crypto.randomUUID()
+    }
+  );
+}
+
+//vamos con el middleware
+
+async function requiereJWT(req, res, next){
+  const encabezado = req.headers.authorization || '';
+
+  if(!encabezado.starWith('Bearer'.length)){
+    return res.status(401).json({error:'401. Falta el token'});
+  }
+
+  const token = encabezado.slice('Bearer'.length);
+
+  let datos;
+  try{
+    datos = jwt.verify(token, SECRETO_JWT, {algorithm:['HS256']});
+  }catch(error){
+    if(error.name === 'TokenExpiredError'){
+      return res.status(401).json({error: '401. Token expirado, por favor renuevelo'});
+    }
+    return res.status(401).json({error: '401. Token Invalido'})
+  }
+try{
+  if(config.jwtRevocar && (await crearModeloTokens.estaRevocado(datos.jti))){
+    return res.status(401).json({error: '401 Token revocado y ya se cerro la sesion'});
+  }
+}catch(error){
+  return next(error);
+}
+req.jwt = datos;
+next();
+
+}
+
+
+
+function requireRolJWT(rol){
+  return (req, res, next)=> {
+    if(req.jwt.rol !== rol){
+      return res.status(403).json({error:`403 Eres ${req.jwt.usuario}, pero esta ruta le pertenece a ${rol}`});
+    }
+  }
+}
+
+//esto ya es para implementarlo en las rutas
+
+app.post ('/api/jwt/login', async(req, rmSync, next)=> {
+  try{
+    const {usuario, contrasena}= req.body || '';
+    const datos = await usuarios.vereficar(usuario, contrasena);
+    if(!datos) return res.status(401).json({error: 'Usuario o contrña incorrecto'});
+    res.json({token: firmarToken(datos), usuario:datos});
+  }catch(error){
+    next(error);
+  }
+
+  app.get('/api/jwt/perfil', requireRolJWT, (req, res)=>{
+    res.json({
+      mensaje: `Hola ${req.jwt.nombre}`,
+      rol : req.jwt.rol,
+      expiraEnSegundos : Math.max(0, req.jwt.exp - Math.floor(Date,now()/ 1000)),
+    });
+  });
+
+  app.get('/api/jwt/admin/reporte', requiereJWT, requiereRol('admin'), (req, res)=>{
+    res.json({reporte: 'Talleres: 3'});
+  });
+
+  app.post('/api/jwt/logout', requiereJWT, async(req, res, next)=>{
+    try{
+      if(config.jwtRevocar){
+        await tokens.revocar(req.jwt.jti, req.jwt.usuario, req.jwt.exp);
+        return res.json({mensaje: 'Tpken revocado, se agrega a la lista negra', revocado: true});
+      }
+      res.json({mensaje: 'El servidor no guarda nada', revocado: false});
+
+    }catch(error){
+      next(error);
+    }
+  });
+})
 
   return app;
 }
