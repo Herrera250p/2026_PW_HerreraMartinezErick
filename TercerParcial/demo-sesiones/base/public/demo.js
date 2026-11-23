@@ -24,9 +24,11 @@ function registrar(resultado, ruta) {
 function mostrarEstado(autenticado, datos) {
   const estado = $('estado');
   estado.className = `estado ${autenticado ? 'con-sesion' : 'sin-sesion'}`;
-  estado.textContent = autenticado
-    ? `${datos.usuario.nombre} (${datos.usuario.rol})`
-    : 'Sin sesión';
+  if (autenticado) {
+    estado.textContent = `${datos.usuario.nombre} · rol ${datos.usuario.rol} · sesión ${datos.sesion || '(sin id)'} · vence en ${datos.expiraEnSegundos ?? 0} s`;
+  } else {
+    estado.textContent = 'Sin sesión';
+  }
   $('cookie-js').textContent = document.cookie || '(vacío)';
 }
 
@@ -37,7 +39,8 @@ async function actualizarEstado() {
     return resultado;
   } catch (error) {
     console.error('No se pudo consultar el perfil:', error);
-    $('estado').textContent = 'No se pudo conectar con el servidor';
+    $('estado').className = 'estado sin-sesion';
+    $('estado').textContent = 'Sin sesión';
     return null;
   }
 }
